@@ -18,14 +18,17 @@ under the hood so they can better understand, detect, and defend against them.
 
 | Feature | Description |
 |---|---|
-| **Keystroke logging** | Captures every key press with timestamp and active-window context |
-| **Mouse-click logging** | Records button, coordinates, and focused window |
-| **Clipboard monitoring** | Detects and logs clipboard changes |
-| **Screenshots** | Periodic PNG screenshots saved to a local `screenshots/` folder |
-| **Phrase summarisation** | Reconstructs typed words for a human-readable summary |
+| **Keystroke logging** | Thread-safe capture of every key press with timestamp and active-window context |
+| **Extended key map** | Covers ctrl, shift, alt (both sides), caps lock, arrows, delete, home, end, page up/down, F1–F12 |
+| **Mouse-click logging** | Records button, coordinates, and focused window (disable with `--no-mouse`) |
+| **Clipboard monitoring** | Periodically polls for clipboard changes (disable with `--no-clipboard`) |
+| **Screenshots** | Configurable-interval PNG screenshots saved to a `screenshots/` folder |
+| **Phrase summarisation** | Backspace-aware text reconstruction for a clean human-readable summary |
 | **FTP exfiltration demo** | Uploads the log file to an FTP server (lab demo only) |
 | **Base64 obfuscation demo** | Shows how logs can be encoded to evade naive string matching |
 | **Demo mode** | Prints all events to stdout with no files written |
+| **Session statistics** | Keystroke / click / clipboard / screenshot counts printed on exit |
+| **Graceful shutdown** | Clean exit on Escape key, Ctrl+C, or SIGTERM — no dangling threads |
 
 ---
 
@@ -34,13 +37,11 @@ under the hood so they can better understand, detect, and defend against them.
 - Python 3.10 or later
 - The following third-party packages (install with pip):
 
-```
-pynput
-pyautogui
-pyperclip
+```bash
+pip install -r requirements.txt
 ```
 
-Install them all at once:
+Or individually:
 
 ```bash
 pip install pynput pyautogui pyperclip
@@ -62,9 +63,14 @@ python keylogger.py [OPTIONS]
 | `--demo` | Print events to stdout; write no files |
 | `--no-log` | Disable the keystroke log file |
 | `--summary-only` | Print reconstructed phrases only |
-| `--screenshots` | Capture a screenshot every 60 seconds |
+| `--screenshots` | Capture periodic screenshots |
+| `--screenshot-interval SECS` | Seconds between screenshots (default: `60`) |
+| `--no-mouse` | Disable mouse-click logging |
+| `--no-clipboard` | Disable clipboard monitoring |
+| `--clipboard-interval SECS` | Seconds between clipboard polls (default: `5`) |
 | `--obfuscate` | Base64-encode log lines (evasion technique demo) |
 | `--stealth` | Clear the terminal on startup |
+| `--output-dir DIR` | Directory for log files and screenshots (default: cwd) |
 | `--ftp-host HOST` | FTP server hostname for log exfiltration demo |
 | `--ftp-user USER` | FTP username |
 | `--ftp-pass PASS` | FTP password |
@@ -81,6 +87,12 @@ python keylogger.py --demo
 # Log keystrokes to a file and capture periodic screenshots
 python keylogger.py --screenshots
 
+# Screenshots every 30 seconds into a custom output directory
+python keylogger.py --screenshots --screenshot-interval 30 --output-dir /tmp/lab
+
+# Keystrokes only — no mouse, no clipboard, no screenshots
+python keylogger.py --no-mouse --no-clipboard
+
 # Show only reconstructed phrases (no raw key events)
 python keylogger.py --summary-only
 
@@ -95,9 +107,11 @@ python keylogger.py --demo --obfuscate
 
 ## 📂 Output
 
-- **Log file** — written to the current directory as
+- **Log file** — written to the output directory (default: cwd) as
   `keylog_YYYY-MM-DD_HH-MM-SS.txt`
-- **Screenshots** — saved to `./screenshots/screenshot_YYYYMMDD_HHMMSS.png`
+- **Screenshots** — saved to `<output-dir>/screenshots/screenshot_YYYYMMDD_HHMMSS.png`
+
+Use `--output-dir DIR` to control where all output is written.
 
 ---
 
