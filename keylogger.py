@@ -47,7 +47,7 @@ import pyperclip                    # pip install pyperclip
 # ── Disclaimer ────────────────────────────────────────────────────────────────
 DISCLAIMER = """
 ╔══════════════════════════════════════════════════════════════════════╗
-║          ETHICAL KEYLOGGER — FOR EDUCATIONAL USE ONLY               ║
+║          ETHICAL KEYLOGGER — FOR EDUCATIONAL USE ONLY                ║
 ║                                                                      ║
 ║  Only run this tool on systems you own or have written permission    ║
 ║  to test. Unauthorized use is illegal and unethical.                 ║
